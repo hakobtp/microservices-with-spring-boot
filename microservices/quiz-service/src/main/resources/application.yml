@@ -1,0 +1,9 @@
+server:
+  port: 8003
+spring:
+  application:
+    name: quiz-service
+logging:
+  level:
+    root: INFO
+    com.htp: DEBUG

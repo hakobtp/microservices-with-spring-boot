@@ -20,7 +20,7 @@ public interface QuizService {
      * Example: GET /api/v1/quizzes/course/{courseId}
      */
     @GetMapping("/course/{courseId}")
-    ResponseEntity<List<Quiz>> getQuizzesByCourseId(@PathVariable Long courseId);
+    ResponseEntity<List<Quiz>> getQuizzesByChapterId(@PathVariable Long courseId);
 
     /**
      * Create a new quiz
