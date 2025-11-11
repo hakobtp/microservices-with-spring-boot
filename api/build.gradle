@@ -1,11 +1,11 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.htp.microservices.core.chapter'
+group = 'com.htp.microservices.api'
 version = '1.0.0-SNAPSHOT'
+
 
 java {
 	toolchain {
@@ -23,17 +23,17 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+    springBootVersion = '3.5.7'
+    lombokVersion = '1.18.42'
+}
+
 dependencies {
-    implementation project(':api')
-
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    compileOnly "org.projectlombok:lombok"
-    annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
