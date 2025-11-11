@@ -1,0 +1,4 @@
+include ':microservices:chapter-service'
+include ':microservices:course-service'
+include ':microservices:course-composite-service'
+include ':microservices:quiz-service'
