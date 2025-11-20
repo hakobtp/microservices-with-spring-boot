@@ -4,9 +4,11 @@ import com.htp.microservices.api.exceptions.InvalidRequestException;
 import com.htp.microservices.api.exceptions.NotFoundException;
 import com.htp.microservices.util.error.ErrorMessage;
 import com.htp.microservices.util.error.FieldErrorInfo;
+import com.htp.microservices.util.exceptions.CourseCompositeException;
 import com.htp.microservices.util.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -57,6 +59,13 @@ public class GlobalControllerExceptionHandler {
                 errorResponse.message().bannerMessage(), fieldErrors);
 
         return errorResponse;
+    }
+
+    @ExceptionHandler(CourseCompositeException.class)
+    public ResponseEntity<ErrorResponse> handleCourseCompositeException(CourseCompositeException exception) {
+        var errorResponse = exception.getErrorResponse();
+        return ResponseEntity.status(errorResponse.httpStatus())
+                .body(errorResponse);
     }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)

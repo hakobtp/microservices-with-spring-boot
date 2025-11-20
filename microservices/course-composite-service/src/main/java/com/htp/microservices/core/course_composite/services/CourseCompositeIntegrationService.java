@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -24,26 +25,42 @@ public class CourseCompositeIntegrationService implements CourseService, Chapter
 
     private final RestTemplate restTemplate;
     private final MicroservicesConfig microservicesConfig;
+    private final HttpClientErrorHandleService httpClientErrorHandleService;
 
     @Override
     public Course getCourseById(Long courseId) {
-        var url = microservicesConfig.getCourseServiceUrl() + "/" + courseId;
-        return restTemplate.getForObject(url, Course.class);
+        try {
+            var url = microservicesConfig.getCourseServiceUrl() + "/" + courseId;
+            return restTemplate.getForObject(url, Course.class);
+        } catch (HttpClientErrorException ex) {
+            httpClientErrorHandleService.translateHttpClientError(ex);
+            return null; // unreachable, but required by compiler
+        }
     }
 
     @Override
     public List<Chapter> getChaptersByCourseId(Long courseId) {
-        var url = microservicesConfig.getChapterServiceUrl() + "?courseId=" + courseId;
-        return restTemplate.exchange(url, GET, null,
-                new ParameterizedTypeReference<List<Chapter>>() {
-                }).getBody();
+        try {
+            var url = microservicesConfig.getChapterServiceUrl() + "?courseId=" + courseId;
+            return restTemplate.exchange(url, GET, null,
+                    new ParameterizedTypeReference<List<Chapter>>() {
+                    }).getBody();
+        } catch (Exception ex) {
+            log.warn("Got an exception while requesting chapters, return zero chapters: {}", ex.getMessage());
+            return List.of();
+        }
     }
 
     @Override
     public List<Quiz> getQuizzesByChapterId(Long chapterId) {
-        var url = microservicesConfig.getQuizServiceUrl() + "?chapterId=" + chapterId;
-        return restTemplate.exchange(url, GET, null,
-                new ParameterizedTypeReference<List<Quiz>>() {
-                }).getBody();
+        try {
+            var url = microservicesConfig.getQuizServiceUrl() + "?chapterId=" + chapterId;
+            return restTemplate.exchange(url, GET, null,
+                    new ParameterizedTypeReference<List<Quiz>>() {
+                    }).getBody();
+        } catch (Exception ex) {
+            log.warn("Got an exception while requesting quizzes, return zero quizzes: {}", ex.getMessage());
+            return List.of();
+        }
     }
 }
