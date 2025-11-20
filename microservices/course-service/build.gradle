@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.htp.microservices.core.course'
 version = '1.0.0-SNAPSHOT'
-description = 'Demo project for Spring Boot'
 
 java {
 	toolchain {

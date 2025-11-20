@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: course-composite-service
+
+server:
+  port: 7000
+  error:
+    include-message: always
+
+microservices:
+  course-service:
+    host: localhost
+    port: 8082
+  chapter-service:
+    host: localhost
+    port: 8081
+  quiz-service:
+    host: localhost
+    port: 8003
+
+logging:
+  level:
+    root: INFO
+    se.magnus: DEBUG
