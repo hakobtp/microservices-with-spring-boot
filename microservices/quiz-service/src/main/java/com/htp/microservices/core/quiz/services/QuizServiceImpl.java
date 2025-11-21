@@ -2,6 +2,7 @@ package com.htp.microservices.core.quiz.services;
 
 import com.htp.microservices.api.core.quiz.Quiz;
 import com.htp.microservices.api.core.quiz.QuizService;
+import com.htp.microservices.api.exceptions.InvalidRequestException;
 import com.htp.microservices.util.service.ServiceUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class QuizServiceImpl implements QuizService {
     public List<Quiz> getQuizzesByChapterId(Long chapterId) {
         if (chapterId == null || chapterId < 1) {
             log.error("Invalid chapterId received: {}", chapterId);
-            return List.of();
+            throw new InvalidRequestException("Invalid chapterId (must be > 0): " + chapterId);
         }
         List<Quiz> quizzesForChapter = quizzes.values().stream()
                 .filter(quiz -> chapterId.equals(quiz.chapterId()))
