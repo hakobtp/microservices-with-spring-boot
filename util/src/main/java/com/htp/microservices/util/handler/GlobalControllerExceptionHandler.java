@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.server.ResponseStatusException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @Slf4j
 @RestControllerAdvice
@@ -68,10 +70,18 @@ public class GlobalControllerExceptionHandler {
                 .body(errorResponse);
     }
 
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public ErrorResponse handleGenericException(ServerHttpRequest request, Exception exception) {
-        return createHttpErrorResponse(INTERNAL_SERVER_ERROR, request, exception);
+    public ResponseEntity<ErrorResponse> handleGenericException(ServerHttpRequest request, Exception exception) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (exception instanceof ResponseStatusException) {
+            var statusCode = ((ResponseStatusException) exception).getBody().getStatus();
+            HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
+            if (httpStatus.is4xxClientError()) {
+                status = httpStatus;
+            }
+        }
+        return ResponseEntity.status(status)
+                .body(createHttpErrorResponse(status, request, exception));
     }
 
     private ErrorResponse createHttpErrorResponse(
