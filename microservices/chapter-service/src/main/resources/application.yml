@@ -7,3 +7,6 @@ logging:
   level:
     root: INFO
     com.htp: DEBUG
+---
+spring.config.activate.on-profile: docker
+server.port: 8080
